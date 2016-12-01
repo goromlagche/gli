@@ -1,0 +1,6 @@
+# https://gitlab.com/profile/account
+accounts:
+  - key:
+    url: https://gitlab.dev.custom.domain.com/api/v3
+  - key:
+    url: https://gitlab.com/api/v3
