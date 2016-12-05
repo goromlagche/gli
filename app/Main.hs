@@ -8,4 +8,4 @@ import           Gli.Types
 main :: IO ()
 main = do
   cfg <- decodeFile "/Users/goromlagche/.gli.yml" :: IO (Maybe GliCfg)
-  projects(fromJust cfg)
+  allAccounts(fromJust cfg)
