@@ -8,6 +8,13 @@ import qualified Data.ByteString.Char8 as B
 import qualified Data.Text             as T
 import           GHC.Generics          (Generic)
 
+data Setup =
+  Setup { keyFile :: String } deriving (Show)
+
+data Commands =
+  Commands { setup :: Setup
+           } deriving (Show)
+
 data Project =
   Project { id          :: Int
           , description :: Maybe T.Text

@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Gli.Types
                      , Gli.Gitlab
+                     , Gli.Cli
   build-depends:       base >= 4.7 && < 5
                      , http-client
                      , http-conduit
@@ -24,6 +25,7 @@ library
                      , text
                      , aeson
                      , bytestring
+                     , optparse-applicative
   default-language:    Haskell2010
 
 executable gli
