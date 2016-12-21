@@ -5,6 +5,7 @@ module Gli.Types where
 
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as B
+import           Data.Map              (Map)
 import qualified Data.Text             as T
 import           GHC.Generics          (Generic)
 
@@ -78,20 +79,34 @@ data User = User { name     :: T.Text
 instance Show User where
    show (User _ uusername) = show uusername
 
-data GliCfg = GliCfg { accounts :: [Account]
+data GliCfg = GliCfg { accounts :: Account
                      } deriving (Generic, Show)
 
-data Account = Account { key :: T.Text
-                       , url :: T.Text
-                       } deriving (Generic, Show)
+newtype Account = Account (Map T.Text AccountConfig)
+                deriving (Generic, Show)
 
-type AccountConfg = (String, B.ByteString)
+data AccountConfig = AccountConfig { key :: T.Text
+                                   , url :: T.Text
+                                   } deriving (Generic, Show)
+
+type GitlabAccountConfig = (String, B.ByteString)
+
+data GitUrl = GitUrl { domain :: T.Text
+                     , repo   :: T.Text
+                     }
+
+instance Show GitUrl where
+   show (GitUrl gdomain grepo) =
+       unlines [ "Git Project Found"
+               , "Url:        " ++ show gdomain
+               , "Repo:       " ++ show grepo
+               , ""
+               ]
 
 instance ToJSON MergeRequest  where
   toEncoding = genericToEncoding defaultOptions
 instance ToJSON User  where
   toEncoding = genericToEncoding defaultOptions
-
 instance ToJSON Project where
   toEncoding = genericToEncoding defaultOptions
 
@@ -99,6 +114,7 @@ instance FromJSON MergeRequest
 instance FromJSON User
 instance FromJSON GliCfg
 instance FromJSON Account
+instance FromJSON AccountConfig
 instance FromJSON Project
 
 justOrEmpty :: Show a => Maybe a -> String

@@ -1,5 +1,6 @@
 module Gli.Cli where
 
+import           Gli.Setup
 import           Gli.Types
 import           Options.Applicative
 
@@ -17,12 +18,12 @@ opts = info (helper <*> versionOption <*> commands)
 commands :: Parser Commands
 commands = Commands
      <$> subparser (command "setup"
-                    (info setupProject
+                    (info (helper <*> parseSetupFile)
                       ( fullDesc
                         <> progDesc "Setup you project" )))
 
-setupProject :: Parser Setup
-setupProject = Setup
+parseSetupFile :: Parser Setup
+parseSetupFile = Setup
      <$> strOption
          ( long "file"
         <> short 'f'
@@ -30,7 +31,7 @@ setupProject = Setup
         <> help "Accepts input file which has gitlab keys" )
 
 runCli :: Commands -> IO ()
-runCli cmd = putStrLn $ (keyFile . setup) cmd
+runCli cmd = setupProject $ (keyFile . setup) cmd
 
-runParser :: IO Commands
-runParser = execParser opts
+runParser :: IO ()
+runParser = execParser opts >>= runCli
