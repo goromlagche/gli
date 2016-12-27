@@ -5,7 +5,7 @@ module Gli.Types where
 
 import           Data.Aeson
 import qualified Data.ByteString.Char8 as B
-import           Data.Map              (Map)
+import           Data.Map.Strict       as M
 import qualified Data.Text             as T
 import           GHC.Generics          (Generic)
 
@@ -95,12 +95,19 @@ data GitUrl = GitUrl { domain :: T.Text
                      , repo   :: T.Text
                      }
 
+data LocalYmlContent = LocalYmlContent { masterFileConfig :: MasterFileConfig
+                                       } deriving (Generic, Show)
+
+data MasterFileConfig = MasterFileConfig { file :: FilePath
+                                         , key  :: T.Text
+                                         }
+                         deriving (Generic, Show)
+
 instance Show GitUrl where
    show (GitUrl gdomain grepo) =
        unlines [ "Git Project Found"
-               , "Url:        " ++ show gdomain
+               , "Domain:     " ++ show gdomain
                , "Repo:       " ++ show grepo
-               , ""
                ]
 
 instance ToJSON MergeRequest  where
@@ -109,6 +116,14 @@ instance ToJSON User  where
   toEncoding = genericToEncoding defaultOptions
 instance ToJSON Project where
   toEncoding = genericToEncoding defaultOptions
+instance ToJSON Account where
+  toEncoding = genericToEncoding defaultOptions
+instance ToJSON AccountConfig where
+  toEncoding = genericToEncoding defaultOptions
+instance ToJSON LocalYmlContent where
+  toEncoding = genericToEncoding defaultOptions
+instance ToJSON MasterFileConfig where
+  toEncoding = genericToEncoding defaultOptions
 
 instance FromJSON MergeRequest
 instance FromJSON User
@@ -116,6 +131,7 @@ instance FromJSON GliCfg
 instance FromJSON Account
 instance FromJSON AccountConfig
 instance FromJSON Project
+
 
 justOrEmpty :: Show a => Maybe a -> String
 justOrEmpty (Just a)  = show a

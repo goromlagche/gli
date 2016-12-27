@@ -29,7 +29,7 @@ library
                      , bytestring
                      , optparse-applicative
                      , process
-                     , either-unwrap
+                     , network-uri
                      , yaml
   default-language:    Haskell2010
 
