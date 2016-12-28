@@ -12,22 +12,24 @@ import           GHC.Generics          (Generic)
 data Setup =
   Setup { keyFile :: String } deriving (Show)
 
-data Commands =
-  Commands { setup :: Setup
-           } deriving (Show)
+data Commands = CmdSetup Setup
+              | CmdPrs
+              deriving (Show)
 
 data Project =
-  Project { id          :: Int
-          , description :: Maybe T.Text
-          , name        :: T.Text
+  Project { id              :: Int
+          , description     :: Maybe T.Text
+          , name            :: T.Text
+          , ssh_url_to_repo :: T.Text
           } deriving (Generic)
 
 instance Show Project where
-   show (Project pid pdescription pname) =
-       unlines [ ""
+   show (Project pid pdescription pname purl) =
+       unlines [ "GitLab Project"
                , "Id:         " ++ show pid
                , "Name:       " ++ show pname
                , "Descripion: " ++ justOrEmpty pdescription
+               , "Git Url:    " ++ show purl
                , ""
                ]
 
@@ -85,8 +87,8 @@ data GliCfg = GliCfg { accounts :: Account
 newtype Account = Account (Map T.Text AccountConfig)
                 deriving (Generic, Show)
 
-data AccountConfig = AccountConfig { key :: T.Text
-                                   , url :: T.Text
+data AccountConfig = AccountConfig { key :: String
+                                   , url :: String
                                    } deriving (Generic, Show)
 
 type GitlabAccountConfig = (String, B.ByteString)
@@ -96,6 +98,7 @@ data GitUrl = GitUrl { domain :: T.Text
                      }
 
 data LocalYmlContent = LocalYmlContent { masterFileConfig :: MasterFileConfig
+                                       , project          :: Project
                                        } deriving (Generic, Show)
 
 data MasterFileConfig = MasterFileConfig { file :: FilePath
@@ -131,8 +134,13 @@ instance FromJSON GliCfg
 instance FromJSON Account
 instance FromJSON AccountConfig
 instance FromJSON Project
+instance FromJSON LocalYmlContent
+instance FromJSON MasterFileConfig
 
 
 justOrEmpty :: Show a => Maybe a -> String
 justOrEmpty (Just a)  = show a
 justOrEmpty Nothing = ""
+
+localYmlFile :: FilePath
+localYmlFile = "gli.yml"

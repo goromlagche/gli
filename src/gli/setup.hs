@@ -6,6 +6,7 @@ import qualified Data.Attoparsec.Text as P
 import qualified Data.Map.Strict      as M
 import qualified Data.Text            as T
 import           Data.Yaml
+import           Gli.Gitlab
 import           Gli.Types
 import           Network.URI
 import           System.Process
@@ -15,7 +16,7 @@ setupProject file = do
   origin <- readProcess "git"
             ["config", "--get", "remote.origin.url"]
             ""
-  case P.parseOnly parseGitUrl (T.pack origin) of
+  case P.parseOnly parseGitUrl (T.pack (origin)) of
     Left  msg    -> print msg
     Right gitUrl -> do
       print gitUrl
@@ -26,12 +27,15 @@ setupProject file = do
           then putStrLn $ mappend "Unable to find a relevent key for \
                                   \the domain, please check the config \
                                   \file " (show file)
-          else encodeFile "gli.yml" localYmlContent
+          else do
+          project <- getProject
+            (T.strip (T.pack origin)) (head $ M.elems $  matchedKeyVal)
+          encodeFile localYmlFile (LocalYmlContent
+                                   (MasterFileConfig file matchedKey)
+                                    project)
           where
+            matchedKey = head $ M.keys $ matchedKeyVal
             matchedKeyVal = fetchKeyFromAccount (accounts b) (domain gitUrl)
-            localYmlContent =
-              LocalYmlContent $ MasterFileConfig
-              file (head (M.keys matchedKeyVal))
 
 parseGitUrl :: P.Parser GitUrl
 parseGitUrl = do
@@ -43,13 +47,15 @@ parseGitUrl = do
 
 fetchKeyFromAccount :: Account -> T.Text -> M.Map T.Text AccountConfig
 fetchKeyFromAccount a g =
-  M.filter (\v -> g == httpDomainConfig(url v)) (accountHash a)
-  where accountHash (Account acc) = acc
+  M.filter (\v -> g == httpDomainConfig(url v)) (accountMap a)
 
-httpDomainConfig :: T.Text -> T.Text
+httpDomainConfig :: String -> T.Text
 httpDomainConfig u =
-  case parseURI (T.unpack u) of
+  case parseURI u of
     Nothing -> error "Unable to find remote url"
     Just a  -> case uriAuthority a of
       Nothing -> error "Unable to parse the url"
       Just b  -> T.pack $ uriRegName b
+
+accountMap :: Account -> M.Map T.Text AccountConfig
+accountMap (Account acc) = acc

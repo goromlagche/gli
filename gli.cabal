@@ -18,6 +18,7 @@ library
   exposed-modules:     Gli.Types
                      , Gli.Cli
                      , Gli.Setup
+                     , Gli.Gitlab
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , http-client
