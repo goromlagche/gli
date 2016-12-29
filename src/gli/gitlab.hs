@@ -39,41 +39,15 @@ getProject repoUrl a = do
 parseProject :: BLI.ByteString -> Maybe [Project]
 parseProject body = decode body :: Maybe [Project]
 
+mergeRequests :: AccountConfig -> IO String
+mergeRequests cfg = do
+  prResponseBody <- apiCall cfg
+  let body = justBody $ parseMergeRequest prResponseBody
+  return (unlines (map show body))
 
--- fetchAccount :: AccountConfig -> IO ()
--- fetchAccount x = do
---   let configs = accountConfigs x
---   accountResponseBody <- apiCall $ configs "/projects"
---   let body = justBody $ parseProject accountResponseBody
---   mapM_ (printProject configs) body
+parseMergeRequest :: BLI.ByteString -> Maybe [MergeRequest]
+parseMergeRequest body = decode body :: Maybe [MergeRequest]
 
--- printProject :: (String -> AccountConfg) -> Project -> IO ()
--- printProject configs project = do
---   putStrLn "\\------------------------------------------------------------------------/"
---   print project
---   pRs <- mergeRequests configs $ id (project :: Project)
---   putStrLn pRs
---   putStrLn "/------------------------------------------------------------------------\\"
-
--- parseProject :: BLI.ByteString -> Maybe [Project]
--- parseProject body = decode body :: Maybe [Project]
-
--- mergeRequests :: (String -> AccountConfg) -> Int -> IO String
--- mergeRequests configs pid = do
---   prResponseBody <- apiCall $
---                     configs ( "/projects/" ++
---                               show pid ++
---                               "/merge_requests?state=opened")
---   let body = justBody $ parseMergeRequest prResponseBody
---   return (unlines (map show body))
-
--- parseMergeRequest :: BLI.ByteString -> Maybe [MergeRequest]
--- parseMergeRequest body = decode body :: Maybe [MergeRequest]
-
--- justBody :: Maybe [a] -> [a]
--- justBody Nothing = []
--- justBody (Just elems) = elems
-
--- accountConfigs :: Account -> String -> AccountConfg
--- accountConfigs x apiUrl =
---   (T.unpack(url (x :: Account)) ++ apiUrl, B.pack $ T.unpack $ key x)
+justBody :: Maybe [a] -> [a]
+justBody Nothing = []
+justBody (Just elems) = elems

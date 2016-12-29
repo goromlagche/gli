@@ -4,10 +4,13 @@ module Gli.Cli where
 
 import qualified Data.Map.Strict     as M
 import           Data.Maybe
+import qualified Data.Text           as T
 import qualified Data.Yaml           as Y
+import           Gli.Gitlab
 import           Gli.Setup
 import           Gli.Types
 import           Options.Applicative
+import           Prelude             hiding (id)
 
 opts :: ParserInfo Commands
 opts = info (helper <*> versionOption <*> commands)
@@ -40,14 +43,31 @@ parseSetupFile = Setup
 
 runCli :: Commands -> IO ()
 runCli (CmdSetup cmd) = setupProject $ keyFile cmd
-runCli (CmdPrs) = do
+runCli CmdPrs = do
   localCfg <- Y.decodeFile localYmlFile :: IO (Maybe LocalYmlContent)
   let masterFileKey = masterFileConfig $ fromJust localCfg
-  masterCfg <- Y.decodeFile (file masterFileKey) :: IO (Maybe GliCfg)
+  let filePath = file masterFileKey
+  let fileKey = key (masterFileKey :: MasterFileConfig)
+  let projectID = id (project (fromJust localCfg) :: Project)
+  masterCfg <- Y.decodeFile filePath :: IO (Maybe GliCfg)
   case masterCfg of
-    Nothing -> putStrLn $ mappend "Unable to parse file " (show $ file masterFileKey)
-    Just b  -> print $ M.lookup (key (masterFileKey :: MasterFileConfig)) (accountMap (accounts b))
-
+    Nothing -> error $ mappend "Unable to parse file " (show filePath)
+    Just b  ->
+      case M.lookup fileKey (accountMap (accounts b)) of
+        Nothing -> error $ concat[ "Unable to find key"
+                                 , T.unpack fileKey
+                                 , " in masterfile "
+                                 , filePath]
+        Just c  -> do
+          pRs <-
+            mergeRequests (AccountConfig (key (c :: AccountConfig)) gitlabUrl)
+          putStrLn pRs
+          where
+            gitlabUrl =
+              url c
+              ++ "/projects/"
+              ++ show projectID
+              ++ "/merge_requests?state=opened"
 
 runParser :: IO ()
 runParser = execParser opts >>= runCli

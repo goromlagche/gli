@@ -38,6 +38,7 @@ data MergeRequest = MergeRequest { id                        :: Int
                                  , iid                       :: Int
                                  , project_id                :: Int
                                  , description               :: Maybe T.Text
+                                 , source_branch             :: T.Text
                                  , upvotes                   :: Int
                                  , downvotes                 :: Int
                                  , author                    :: User
@@ -57,8 +58,8 @@ data MergeRequest = MergeRequest { id                        :: Int
                                  } deriving (Generic)
 
 instance Show MergeRequest where
-   show (MergeRequest mid mtitle _ _ mdescription _
-         _ mauthor massignee _
+   show (MergeRequest mid mtitle _ _ mdescription msource_branch
+         _ _ mauthor massignee _
          _ _ mwork_in_progress _
          _ mmerge_status _ mweb_url _ mcreated mupdated) =
      unlines [ "ID:         " ++  show mid
@@ -69,9 +70,9 @@ instance Show MergeRequest where
              , "Assignee:   " ++  justOrEmpty massignee
              , "WIP:        " ++  show mwork_in_progress
              , "Status:     " ++  show mmerge_status
+             , "Branch:     " ++  show msource_branch
              , "Created At: " ++  show mcreated
              , "Updated At: " ++  show mupdated
-             , ""
              ]
 
 data User = User { name     :: T.Text
