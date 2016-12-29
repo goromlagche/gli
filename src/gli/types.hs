@@ -145,3 +145,6 @@ justOrEmpty Nothing = ""
 
 localYmlFile :: FilePath
 localYmlFile = "gli.yml"
+
+gitInfoExcludeFile :: FilePath
+gitInfoExcludeFile = ".git/info/exclude"

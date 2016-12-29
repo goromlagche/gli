@@ -33,6 +33,7 @@ setupProject file = do
           encodeFile localYmlFile (LocalYmlContent
                                    (MasterFileConfig file matchedKey)
                                     project)
+          appendFile gitInfoExcludeFile localYmlFile
           where
             matchedKey = head $ M.keys $ matchedKeyVal
             matchedKeyVal = fetchKeyFromAccount (accounts b) (domain gitUrl)
