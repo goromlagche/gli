@@ -7,6 +7,7 @@ import           Data.Aeson
 import qualified Data.ByteString.Char8 as B
 import           Data.Map.Strict       as M
 import qualified Data.Text             as T
+import           Data.Time
 import           GHC.Generics          (Generic)
 
 data Setup =
@@ -53,8 +54,8 @@ data MergeRequest = MergeRequest { id                        :: Int
                                  , subscribed                :: Maybe Bool
                                  , web_url                   :: T.Text
                                  , sha                       :: T.Text
-                                 , created_at                :: T.Text
-                                 , updated_at                :: T.Text
+                                 , created_at                :: UTCTime
+                                 , updated_at                :: UTCTime
                                  } deriving (Generic)
 
 instance Show MergeRequest where
@@ -71,8 +72,6 @@ instance Show MergeRequest where
              , "WIP:        " ++  show mwork_in_progress
              , "Status:     " ++  show mmerge_status
              , "Branch:     " ++  show msource_branch
-             , "Created At: " ++  show mcreated
-             , "Updated At: " ++  show mupdated
              ]
 
 data User = User { name     :: T.Text

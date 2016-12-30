@@ -8,6 +8,7 @@ import qualified Data.ByteString.Char8         as B
 import qualified Data.ByteString.Internal      as BI
 import qualified Data.ByteString.Lazy.Internal as BLI
 import qualified Data.Text                     as T
+import           Data.Time.Format.Human        (humanReadableTime)
 import           Gli.Types
 import           Network.HTTP.Client
 import           Network.HTTP.Client.TLS
@@ -39,11 +40,18 @@ getProject repoUrl a = do
 parseProject :: BLI.ByteString -> Maybe [Project]
 parseProject body = decode body :: Maybe [Project]
 
-mergeRequests :: AccountConfig -> IO String
+mergeRequests :: AccountConfig -> IO ()
 mergeRequests cfg = do
   prResponseBody <- apiCall cfg
   let body = justBody $ parseMergeRequest prResponseBody
-  return (unlines (map show body))
+  mapM_ modifyAndShow body
+
+modifyAndShow :: MergeRequest -> IO ()
+modifyAndShow m = do
+  c <- humanReadableTime $ created_at m
+  u <- humanReadableTime $ updated_at m
+  putStrLn $ unlines (lines (show m) ++ [ "Created At: " ++  show c
+                                      , "Updated At: " ++  show u])
 
 parseMergeRequest :: BLI.ByteString -> Maybe [MergeRequest]
 parseMergeRequest body = decode body :: Maybe [MergeRequest]

@@ -59,9 +59,7 @@ runCli CmdPrs = do
                                  , " in masterfile "
                                  , filePath]
         Just c  -> do
-          pRs <-
-            mergeRequests (AccountConfig (key (c :: AccountConfig)) gitlabUrl)
-          putStrLn pRs
+          mergeRequests (AccountConfig (key (c :: AccountConfig)) gitlabUrl)
           where
             gitlabUrl =
               url c

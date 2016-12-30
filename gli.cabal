@@ -21,6 +21,8 @@ library
                      , Gli.Gitlab
   build-depends:       base >= 4.7 && < 5
                      , containers
+                     , time
+                     , friendly-time
                      , http-client
                      , http-conduit
                      , http-client-tls
