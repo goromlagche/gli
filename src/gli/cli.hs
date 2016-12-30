@@ -18,7 +18,7 @@ opts = info (helper <*> versionOption <*> commands)
      <> progDesc "Tiny git\"lab/hub\" cli wrapper"
      <> header "gli - make PR review easy again" )
   where
-    versionOption = infoOption "Version 0.0.1"
+    versionOption = infoOption "Version 0.0.1-alpha"
                     ( long "Version"
                       <> short 'v'
                       <> help "Show version")
