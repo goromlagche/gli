@@ -4,16 +4,12 @@ Goal is to fetch PR info etc.
 
 ## Setup
 
-1. `stack setup`
-2. `stack build`
-3. `stack exec which gli` to get the binary path
-4. `alias gli=binary_path`
-
+    cabal install gli
 
 ## Flow
 
 1. **Store the gitlab credentials on a file locally. (e.g. ~/.gli.yml)**
-  
+
   sample file
   ```
       accounts:
@@ -27,7 +23,7 @@ Goal is to fetch PR info etc.
   You can get the credentials from https://gitlab.com/profile/account
 
 2. **Setup `gli` for a git repo**
-  
+
   This will create a repo specific `gli.yml` file, which will store all the information regarding the repo, and will also be checked out from git.
 
   ```
