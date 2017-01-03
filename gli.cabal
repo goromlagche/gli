@@ -27,6 +27,7 @@ library
                      , http-conduit
                      , http-client-tls
                      , text
+                     , time
                      , aeson
                      , attoparsec
                      , bytestring

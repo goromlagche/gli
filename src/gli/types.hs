@@ -27,10 +27,10 @@ data Project =
 instance Show Project where
    show (Project pid pdescription pname purl) =
        unlines [ "GitLab Project"
-               , "Id:         " ++ show pid
-               , "Name:       " ++ show pname
-               , "Descripion: " ++ justOrEmpty pdescription
-               , "Git Url:    " ++ show purl
+               , "Id:              " ++ show pid
+               , "Name:            " ++ show pname
+               , "Descripion:      " ++ justOrEmpty pdescription
+               , "Git Url:         " ++ show purl
                , ""
                ]
 
@@ -63,15 +63,30 @@ instance Show MergeRequest where
          _ _ mauthor massignee _
          _ _ mwork_in_progress _
          _ mmerge_status _ mweb_url _ mcreated mupdated) =
-     unlines [ "ID:         " ++  show mid
-             , "URL:        " ++  show mweb_url
-             , "Title:      " ++  justOrEmpty mtitle
-             , "Descripion: " ++  justOrEmpty mdescription
-             , "Author:     " ++  show mauthor
-             , "Assignee:   " ++  justOrEmpty massignee
-             , "WIP:        " ++  show mwork_in_progress
-             , "Status:     " ++  show mmerge_status
-             , "Branch:     " ++  show msource_branch
+     unlines [ "ID:              " ++  show mid
+             , "URL:             " ++  show mweb_url
+             , "Title:           " ++  justOrEmpty mtitle
+             , "Descripion:      " ++  justOrEmpty mdescription
+             , "Author:          " ++  show mauthor
+             , "Assignee:        " ++  justOrEmpty massignee
+             , "WIP:             " ++  show mwork_in_progress
+             , "Status:          " ++  show mmerge_status
+             , "Branch:          " ++  show msource_branch
+             ]
+
+data Build = Build { id          :: Int
+                   , stage       :: T.Text
+                   , user        :: User
+                   , status      :: T.Text
+                   , created_at  :: UTCTime
+                   , finished_at :: Maybe UTCTime
+                   } deriving (Generic)
+
+instance Show Build where
+   show (Build _ bstage buser bstatus bc bf) =
+     unlines [ "    Status:          " ++  show bstatus
+             , "    Stage:           " ++  show bstage
+             , "    Started by:      " ++  show buser
              ]
 
 data User = User { name     :: T.Text
@@ -109,11 +124,13 @@ data MasterFileConfig = MasterFileConfig { file :: FilePath
 instance Show GitUrl where
    show (GitUrl gdomain grepo) =
        unlines [ "Git Project Found"
-               , "Domain:     " ++ show gdomain
-               , "Repo:       " ++ show grepo
+               , "Domain:          " ++ show gdomain
+               , "Repo:            " ++ show grepo
                ]
 
 instance ToJSON MergeRequest  where
+  toEncoding = genericToEncoding defaultOptions
+instance ToJSON Build  where
   toEncoding = genericToEncoding defaultOptions
 instance ToJSON User  where
   toEncoding = genericToEncoding defaultOptions
@@ -129,6 +146,7 @@ instance ToJSON MasterFileConfig where
   toEncoding = genericToEncoding defaultOptions
 
 instance FromJSON MergeRequest
+instance FromJSON Build
 instance FromJSON User
 instance FromJSON GliCfg
 instance FromJSON Account

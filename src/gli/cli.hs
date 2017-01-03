@@ -65,7 +65,6 @@ runCli CmdPrs = do
               url c
               ++ "/projects/"
               ++ show projectID
-              ++ "/merge_requests?state=opened"
 
 runParser :: IO ()
 runParser = execParser opts >>= runCli
