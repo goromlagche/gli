@@ -58,7 +58,7 @@ modifyAndShow cfg m = do
               ++ [ "Created At:      " ++ show c
                  , "Updated At:      " ++ show u
                  , "Builds:"])
-  mapM_ (printBuild (web_url m) (id (m :: MergeRequest))) b
+  mapM_ (printBuild (web_url m) (iid (m :: MergeRequest))) b
   where
     bc = AccountConfig (key (cfg :: AccountConfig))
          (url cfg ++ "/repository/commits/" ++ T.unpack (sha m) ++ "/builds")

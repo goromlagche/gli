@@ -75,7 +75,7 @@ instance Show MergeRequest where
              ]
 
 data Build = Build { id          :: Int
-                   , stage       :: T.Text
+                   , name        :: T.Text
                    , user        :: User
                    , status      :: T.Text
                    , created_at  :: UTCTime
@@ -83,9 +83,9 @@ data Build = Build { id          :: Int
                    } deriving (Generic)
 
 instance Show Build where
-   show (Build _ bstage buser bstatus bc bf) =
+   show (Build _ bname buser bstatus _ _) =
      unlines [ "    Status:          " ++  show bstatus
-             , "    Stage:           " ++  show bstage
+             , "    Name:            " ++  show bname
              , "    Started by:      " ++  show buser
              ]
 
